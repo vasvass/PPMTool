@@ -4,7 +4,10 @@ import com.vasvass.ppmtool.domain.Project;
 import com.vasvass.ppmtool.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
  * <p><i>Created on: 05/04/2019</i></p>
@@ -22,7 +25,11 @@ public class ProjectController {
   private ProjectService projectService;
 
   @PostMapping("")
-  public ResponseEntity<Project> createNewProject(@RequestBody Project project){
+  public ResponseEntity<?> createNewProject(@Valid @RequestBody Project project, BindingResult result){
+
+     if(result.hasErrors()) {
+        return new ResponseEntity<String>("Invalid Project Object", HttpStatus.BAD_REQUEST);
+     }
 
      Project project1 = projectService.saveOrUpdateProject(project);
 
