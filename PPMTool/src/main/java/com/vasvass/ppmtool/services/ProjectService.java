@@ -19,7 +19,7 @@ public class ProjectService {
    private ProjectRepository projectRepository;
 
 
-   public Project saveOrUpadateProject(Project project) {
+   public Project saveOrUpdateProject(Project project) {
 
       //Logic
 
