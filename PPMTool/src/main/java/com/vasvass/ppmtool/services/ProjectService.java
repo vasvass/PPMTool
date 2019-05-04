@@ -1,6 +1,7 @@
 package com.vasvass.ppmtool.services;
 
 import com.vasvass.ppmtool.domain.Project;
+import com.vasvass.ppmtool.exceptions.ProjectIdException;
 import com.vasvass.ppmtool.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,12 @@ public class ProjectService {
 
    public Project saveOrUpdateProject(Project project) {
 
-      //Logic
-
-     return projectRepository.save(project);
+     try{
+       project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
+       return projectRepository.save(project);
+     } catch (Exception e) {
+       throw new ProjectIdException("ProjectID' "+ project.getProjectIdentifier().toUpperCase() + " 'already exists ");
+     }
    }
 
 
