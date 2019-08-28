@@ -1,8 +1,8 @@
 package com.vasvass.ppmtool.services;
 
-import com.vasvass.ppmtool.domain.Project;
+import com.vasvass.ppmtool.domain.*;
 import com.vasvass.ppmtool.exceptions.ProjectIdException;
-import com.vasvass.ppmtool.repositories.ProjectRepository;
+import com.vasvass.ppmtool.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +19,28 @@ public class ProjectService {
    @Autowired
    private ProjectRepository projectRepository;
 
+   @Autowired
+   private BacklogRepository backlogRepository;
+
 
    public Project saveOrUpdateProject(Project project) {
 
      try{
        project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
+
+       if (project.getId()==null) {
+         Backlog backlog = new Backlog();
+         project.setBacklog(backlog);
+         backlog.setProject(project);
+         backlog.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
+       }
+
+       if (project.getId() != null) {
+         project.setBacklog(backlogRepository.findByProjectIdentifier(project.getProjectIdentifier().toUpperCase()));
+       }
+
        return projectRepository.save(project);
+
      } catch (Exception e) {
        throw new ProjectIdException("ProjectID' "+ project.getProjectIdentifier().toUpperCase() + " 'already exists ");
      }
