@@ -3,8 +3,6 @@ import { getProject, createProject } from "../../actions/projectActions";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import classnames from "classnames";
-import { timingSafeEqual } from "crypto";
-import { thisTypeAnnotation } from "@babel/types";
 
 class UpdateProject extends Component {
   // set state
@@ -95,7 +93,7 @@ class UpdateProject extends Component {
                     <div className="invalid-feedback">{errors.projectName}</div>
                   )}
                 </div>
-                <div class="form-group">
+                <div className="form-group">
                   <input
                     type="text"
                     className={classnames("form-control form-control-lg", {
