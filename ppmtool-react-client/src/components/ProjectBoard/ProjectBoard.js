@@ -15,9 +15,10 @@ class ProjectBoard extends Component {
     const { project_tasks } = this.props.backlog;
     const { id } = this.props.match.params;
 
-    const todos = project_tasks.filter(pt => pt.status === "TO_DO");
-    const inProgress = project_tasks.filter(pt => pt.status === "IN_PROGRESS");
-    const done = project_tasks.filter(pt => pt.status === "DONE");
+    const tasks = project_tasks || [];
+    const todos = tasks.filter(pt => pt.status === "TO_DO");
+    const inProgress = tasks.filter(pt => pt.status === "IN_PROGRESS");
+    const done = tasks.filter(pt => pt.status === "DONE");
 
     return (
       <div className="container">

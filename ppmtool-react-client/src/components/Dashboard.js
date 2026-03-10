@@ -11,13 +11,7 @@ class Dashboard extends Component {
   }
 
   render() {
-    const { projects } = this.props.project;
-
-    const projectObject = {
-      projectName: "ProjectName PROPS",
-      projectIdentifier: "PROP",
-      description: "decription from PROPS"
-    };
+    const projects = this.props.project.projects || [];
     return (
       <div className="projects">
         <div className="container">
