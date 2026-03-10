@@ -1,6 +1,9 @@
 package com.vasvass.ppmtool.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -10,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +28,7 @@ public class User {
     private String fullName;
 
     @NotBlank(message = "Password field is required")
+    @JsonIgnore
     private String password;
 
     @Transient
@@ -47,6 +51,7 @@ public class User {
         this.id = id;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
@@ -63,6 +68,7 @@ public class User {
         this.fullName = fullName;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
@@ -98,5 +104,31 @@ public class User {
     @PrePersist
     protected void onCreate() {
         this.created_At = new Date();
+    }
+
+    // UserDetails interface methods
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

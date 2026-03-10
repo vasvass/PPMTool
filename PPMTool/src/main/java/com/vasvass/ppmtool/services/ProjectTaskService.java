@@ -6,8 +6,6 @@ import com.vasvass.ppmtool.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 /**
  * <p><i>Created on: 29/08/2019</i></p>
  *
@@ -61,8 +59,10 @@ public class ProjectTaskService {
       }
 
       return projectTaskRepository.save(projectTask);
+    } catch (ProjectNotFoundException e) {
+      throw e;
     } catch (Exception e) {
-        throw new ProjectNotFoundException("Project Not Found!");
+      throw new ProjectNotFoundException("Project with ID '" + projectIdentifier + "' not found");
     }
   }
 
@@ -96,7 +96,11 @@ public class ProjectTaskService {
   public ProjectTask updateByProjectSequence(ProjectTask updatedTask, String backlog_id, String pt_id, String username){
     ProjectTask projectTask = findPTByProjectSequence(backlog_id, pt_id, username);
 
-    projectTask = updatedTask;
+    projectTask.setSummary(updatedTask.getSummary());
+    projectTask.setAcceptanceCriteria(updatedTask.getAcceptanceCriteria());
+    projectTask.setStatus(updatedTask.getStatus());
+    projectTask.setPriority(updatedTask.getPriority());
+    projectTask.setDueDate(updatedTask.getDueDate());
 
     return projectTaskRepository.save(projectTask);
   }

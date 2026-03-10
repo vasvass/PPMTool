@@ -5,6 +5,7 @@ import com.vasvass.ppmtool.exceptions.ProjectIdException;
 import com.vasvass.ppmtool.exceptions.ProjectNotFoundException;
 import com.vasvass.ppmtool.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -55,8 +56,10 @@ public class ProjectService {
 
        return projectRepository.save(project);
 
-     } catch (Exception e) {
-       throw new ProjectIdException("ProjectID' "+ project.getProjectIdentifier().toUpperCase() + " 'already exists ");
+     } catch (ProjectNotFoundException e) {
+       throw e;
+     } catch (DataIntegrityViolationException e) {
+       throw new ProjectIdException("ProjectID '" + project.getProjectIdentifier().toUpperCase() + "' already exists");
      }
    }
 

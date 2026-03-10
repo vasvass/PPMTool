@@ -14,21 +14,10 @@ import ProjectBoard from "./components/ProjectBoard/ProjectBoard";
 import AddProjectTask from "./components/ProjectBoard/ProjectTasks/AddProjectTask";
 import UpdateProjectTask from "./components/ProjectBoard/ProjectTasks/UpdateProjectTask";
 import { SET_CURRENT_USER } from "./actions/types";
+import { TOKEN_KEY, decodeToken } from "./actions/securityActions";
 import SecuredRoute from "./securityUtils/SecuredRoute";
 import Login from "./components/UserManagement/Login";
 import Register from "./components/UserManagement/Register";
-
-const TOKEN_KEY = "jwtToken";
-
-const decodeToken = token => {
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    return JSON.parse(window.atob(base64));
-  } catch (e) {
-    return {};
-  }
-};
 
 const token = localStorage.getItem(TOKEN_KEY);
 if (token) {

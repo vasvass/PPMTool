@@ -58,6 +58,7 @@ public class ProjectController {
     ResponseEntity<?> errorMap = mapValidationErrorService.MapValidationService(result);
     if (errorMap != null) return errorMap;
 
+    project.setProjectIdentifier(projectId.toUpperCase());
     Project updatedProject = projectService.saveOrUpdateProject(project, principal.getName());
     return new ResponseEntity<>(updatedProject, HttpStatus.OK);
   }

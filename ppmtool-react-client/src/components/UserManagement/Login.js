@@ -16,12 +16,12 @@ class Login extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.security.validToken) {
+  componentDidUpdate(prevProps) {
+    if (this.props.security.validToken !== prevProps.security.validToken && this.props.security.validToken) {
       this.props.history.push("/dashboard");
     }
-    if (nextProps.errors) {
-      this.setState({ errors: nextProps.errors });
+    if (this.props.errors !== prevProps.errors) {
+      this.setState({ errors: this.props.errors });
     }
   }
 
