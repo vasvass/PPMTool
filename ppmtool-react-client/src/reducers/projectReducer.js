@@ -23,7 +23,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         projects: state.projects.filter(
-          project => project.projectIdentifier != action.payload
+          project => project.projectIdentifier !== action.payload
         )
       };
 

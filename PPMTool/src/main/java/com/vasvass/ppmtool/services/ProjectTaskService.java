@@ -45,14 +45,13 @@ public class ProjectTaskService {
       projectTask.setProjectSequence(backlog.getProjectIdentifier() + "-" + BacklogSequence);
       projectTask.setProjectIdentifier(projectIdentifier);
 
-      // INITIAL Priority when priority is null
-      // ToDo projectTask.getPriority() == 0 to handle the form
-      if (projectTask.getPriority() == null) {
+      // INITIAL Priority when priority is null or 0 (unselected from form)
+      if (projectTask.getPriority() == null || projectTask.getPriority() == 0) {
         projectTask.setPriority(3);
       }
 
-      // INITIAL status when status is null
-      if (projectTask.getStatus() == "" || projectTask.getStatus() == null) {
+      // INITIAL status when status is null or empty
+      if (projectTask.getStatus() == null || projectTask.getStatus().isEmpty()) {
         projectTask.setStatus("TO_DO");
       }
 

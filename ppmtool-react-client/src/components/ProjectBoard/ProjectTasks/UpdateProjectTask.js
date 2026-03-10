@@ -23,32 +23,33 @@ class UpdateProjectTask extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.errors) {
-      this.setState({ errors: nextProps.errors });
+  componentDidUpdate(prevProps) {
+    if (prevProps.errors !== this.props.errors) {
+      this.setState({ errors: this.props.errors });
     }
+    if (prevProps.project_task !== this.props.project_task) {
+      const {
+        id,
+        projectSequence,
+        summary,
+        acceptanceCriteria,
+        status,
+        priority,
+        dueDate,
+        projectIdentifier
+      } = this.props.project_task;
 
-    const {
-      id,
-      projectSequence,
-      summary,
-      acceptanceCriteria,
-      status,
-      priority,
-      dueDate,
-      projectIdentifier
-    } = nextProps.project_task;
-
-    this.setState({
-      id,
-      projectSequence,
-      summary,
-      acceptanceCriteria,
-      status,
-      priority,
-      dueDate,
-      projectIdentifier
-    });
+      this.setState({
+        id,
+        projectSequence,
+        summary,
+        acceptanceCriteria,
+        status,
+        priority,
+        dueDate,
+        projectIdentifier
+      });
+    }
   }
 
   componentDidMount() {

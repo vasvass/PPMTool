@@ -21,27 +21,29 @@ class UpdateProject extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.errors) {
-      this.setState({ errors: nextProps.errors });
+  componentDidUpdate(prevProps) {
+    if (prevProps.errors !== this.props.errors) {
+      this.setState({ errors: this.props.errors });
     }
-    const {
-      id,
-      projectName,
-      projectIdentifier,
-      description,
-      start_date,
-      end_date
-    } = nextProps.project;
+    if (prevProps.project !== this.props.project) {
+      const {
+        id,
+        projectName,
+        projectIdentifier,
+        description,
+        start_date,
+        end_date
+      } = this.props.project;
 
-    this.setState({
-      id,
-      projectName,
-      projectIdentifier,
-      description,
-      start_date,
-      end_date
-    });
+      this.setState({
+        id,
+        projectName,
+        projectIdentifier,
+        description,
+        start_date,
+        end_date
+      });
+    }
   }
 
   componentDidMount() {
@@ -132,6 +134,7 @@ class UpdateProject extends Component {
                     className="form-control form-control-lg"
                     name="start_date"
                     value={this.state.start_date}
+                    onChange={this.onChange}
                   />
                 </div>
                 <h6>Estimated End Date</h6>
@@ -141,6 +144,7 @@ class UpdateProject extends Component {
                     className="form-control form-control-lg"
                     name="end_date"
                     value={this.state.end_date}
+                    onChange={this.onChange}
                   />
                 </div>
 
