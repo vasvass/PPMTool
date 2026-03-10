@@ -37,6 +37,22 @@ export const getProject = (id, history) => async dispatch => {
   }
 };
 
+export const updateProject = (project, history) => async dispatch => {
+  try {
+    const res = await axios.patch("/api/project", project);
+    history.push("/dashboard");
+    dispatch({
+      type: GET_ERRORS,
+      payload: {}
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_ERRORS,
+      payload: err.response.data
+    });
+  }
+};
+
 export const deleteProject = id => async dispatch => {
   if (
     window.confirm(
