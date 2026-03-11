@@ -8,8 +8,8 @@ package com.vasvass.ppmtool.domain;
 
 import com.fasterxml.jackson.annotation.*;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.util.Date;
 
 
