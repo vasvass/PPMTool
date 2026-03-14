@@ -15,18 +15,18 @@ A full-stack project management application built with **Spring Boot** (backend)
 ### Backend
 | Technology | Version |
 |---|---|
-| Java | 1.8 |
-| Spring Boot | 2.1.3 |
+| Java | 21 |
+| Spring Boot | 3.2.3 |
 | Spring Security | (via Boot) |
 | Spring Data JPA | (via Boot) |
-| JJWT | 0.9.1 |
+| JJWT | 0.12.5 |
 | MySQL | runtime |
 | H2 (in-memory) | runtime |
 
 ### Frontend
 | Technology | Notes |
 |---|---|
-| React | 16.8 |
+| React | 18.3.1 |
 | Redux + Redux Thunk | State management |
 | React Router DOM | Client-side routing |
 | Axios | HTTP client |
@@ -61,10 +61,10 @@ PPMTool/
 ## Getting Started
 
 ### Prerequisites
-- Java 8+
-- Maven
-- Node.js & npm
-- MySQL (or use the embedded H2 database for development)
+- Java 21+
+- Maven 3.9+
+- Node.js 18+ & npm
+- MySQL 8+ (or use the embedded H2 database for development)
 
 ### Backend Setup
 
@@ -128,3 +128,51 @@ PPMTool/
 | DELETE | `/api/backlog/{backlog_id}/{pt_id}` | Delete a task |
 
 All project and task endpoints require a valid JWT token in the `Authorization: Bearer <token>` header.
+
+## Current Implementation Status
+
+### Backend (fully implemented)
+
+**Authentication & Security**
+- User registration with email as username, BCrypt password encoding, and password-match validation
+- JWT generation on login with claims: `id`, `username`, `fullName`; 1-hour expiration
+- `JwtAuthenticationFilter` validates tokens on every request and populates the `SecurityContext`
+- Stateless Spring Security configuration; CSRF disabled; CORS enabled globally
+- Custom `JwtAuthEntryPoint` returns JSON `401` responses for unauthenticated requests
+
+**Domain Model**
+- `User` — implements `UserDetails`; owns a list of `Project` entities
+- `Project` — has a unique project identifier (4–5 chars), name, description, start/end dates, and a `projectLeader` field (email of owner)
+- `Backlog` — auto-created with each project; holds a `PTSequence` counter for auto-incrementing task IDs
+- `ProjectTask` — work item with summary, acceptance criteria, status (`TO_DO` / `IN_PROGRESS` / `DONE`), priority (`1`=High / `2`=Medium / `3`=Low), due date, and a sequence ID (e.g. `PROJ-1`)
+
+**Business Logic**
+- All project and task operations validate that the authenticated user is the project owner
+- Task IDs are auto-generated as `{PROJECTID}-{sequence}` (e.g. `MYAPP-3`)
+- Tasks default to priority `3` (Low) and status `TO_DO` if not supplied
+- Global exception handler converts custom exceptions (`ProjectIdException`, `ProjectNotFoundException`, `UsernameAlreadyExistsException`) into structured JSON error responses
+
+### Frontend (fully implemented)
+
+**Authentication**
+- Register and Login forms with client-side and server-side error display
+- JWT stored in `localStorage`; decoded on app load via `jwtDecode` to rehydrate Redux auth state
+- `SecuredRoute` HOC redirects unauthenticated users to `/login`
+- `Header` shows different nav links depending on auth state; displays the logged-in user's full name
+
+**Project Management**
+- Dashboard lists all projects belonging to the current user
+- Add Project form (name, unique identifier, description, start/end dates)
+- Update Project form pre-populated with existing values
+- Delete project with confirmation dialog
+
+**Backlog / Task Board**
+- Kanban board with three columns: **To Do** (grey) | **In Progress** (blue) | **Done** (green)
+- Tasks rendered as cards showing: sequence ID, priority badge (color-coded), summary, truncated acceptance criteria, and Update / Delete actions
+- Add Project Task form with all task fields
+- Update Project Task form pre-populated with existing values
+- Delete task with confirmation dialog
+
+**Redux State**
+- Four slices: `security` (auth), `project` (projects), `backlog` (tasks), `errors` (form errors)
+- Async actions via Redux Thunk; Axios for all API calls with JWT injected from localStorage
