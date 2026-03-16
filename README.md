@@ -61,45 +61,141 @@ PPMTool/
 ## Getting Started
 
 ### Prerequisites
-- Java 21+
-- Maven 3.9+
-- Node.js 18+ & npm
-- MySQL 8+ (or use the embedded H2 database for development)
 
-### Backend Setup
+| Tool | Version | Notes |
+|---|---|---|
+| Java | 21+ | `java -version` to verify |
+| Maven | 3.9+ | Included via `./mvnw` wrapper — no separate install needed |
+| Node.js | 18+ | `node -v` to verify |
+| npm | 9+ | Bundled with Node.js |
+| MySQL | 8+ | Only required for MySQL mode; skip if using H2 |
 
-1. Configure the database in `PPMTool/src/main/resources/application.properties`:
+---
+
+### Option A — Run with H2 (in-memory, no database setup)
+
+This is the fastest way to get started. H2 runs embedded inside the Spring Boot process; data is lost when the server stops.
+
+1. Comment out the MySQL lines and add an H2 datasource in `PPMTool/src/main/resources/application.properties`:
+
    ```properties
-   # For MySQL:
-   spring.datasource.url=jdbc:mysql://localhost:3306/ppmtooldb
-   spring.datasource.username=your_user
-   spring.datasource.password=your_password
+   # H2 in-memory database
+   spring.datasource.url=jdbc:h2:mem:ppmtooldb
+   spring.datasource.driver-class-name=org.h2.Driver
+   spring.datasource.username=sa
+   spring.datasource.password=
 
-   # JWT secret (change in production):
-   app.jwtSecret=PPMToolSecretKeyToGenJWTs
-   app.jwtExpirationInMs=3600000
+   spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+   spring.jpa.hibernate.ddl-auto=create-drop
+   spring.h2.console.enabled=true
    ```
 
-2. Run the backend:
+2. Start the backend (from the repo root):
+
    ```bash
    cd PPMTool
    ./mvnw spring-boot:run
    ```
-   The API will be available at `http://localhost:8080`.
+
+   The API is available at `http://localhost:8080`.
+   The H2 browser console is available at `http://localhost:8080/h2-console`
+   (JDBC URL: `jdbc:h2:mem:ppmtooldb`, username: `sa`, password: leave blank).
+
+---
+
+### Option B — Run with MySQL
+
+#### 1. Create the database and user
+
+Log in to MySQL as root and run:
+
+```sql
+CREATE DATABASE ppmtooldb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'ppmtoolusr'@'localhost' IDENTIFIED BY 'ppmtoolpwd';
+GRANT ALL PRIVILEGES ON ppmtooldb.* TO 'ppmtoolusr'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+> Change the password before deploying anywhere non-local.
+
+#### 2. Verify `application.properties`
+
+The defaults in `PPMTool/src/main/resources/application.properties` already match the credentials above:
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/ppmtooldb?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+spring.datasource.username=ppmtoolusr
+spring.datasource.password=ppmtoolpwd
+
+spring.jpa.hibernate.ddl-auto=update   # creates/updates tables automatically on startup
+```
+
+To override the JWT secret without editing the file, set an environment variable:
+
+```bash
+export APP_JWT_SECRET=your-long-random-secret-here
+```
+
+#### 3. Start the backend
+
+```bash
+cd PPMTool
+./mvnw spring-boot:run
+```
+
+On Windows:
+
+```bat
+cd PPMTool
+mvnw.cmd spring-boot:run
+```
+
+The API is available at `http://localhost:8080`.
+On first run Hibernate will create all tables automatically (`ddl-auto=update`).
+
+---
 
 ### Frontend Setup
 
-1. Install dependencies:
-   ```bash
-   cd ppmtool-react-client
-   npm install
-   ```
+#### 1. Install dependencies
 
-2. Start the dev server:
-   ```bash
-   npm start
-   ```
-   The app will be available at `http://localhost:3000`. API calls are proxied to `http://localhost:8080`.
+```bash
+cd ppmtool-react-client
+npm install
+```
+
+#### 2. Start the dev server
+
+```bash
+npm start
+```
+
+The app opens at `http://localhost:3000`.
+All `/api/*` requests are automatically proxied to `http://localhost:8080` via the `"proxy"` field in `package.json` — no CORS issues during development.
+
+#### 3. Build for production
+
+```bash
+npm run build
+```
+
+Outputs a static bundle to `ppmtool-react-client/build/`. Serve it from any static host or copy it into the Spring Boot `static/` resources folder to serve everything from port 8080.
+
+---
+
+### Running Both Together (quick reference)
+
+Open two terminals:
+
+```bash
+# Terminal 1 — backend
+cd PPMTool && ./mvnw spring-boot:run
+
+# Terminal 2 — frontend
+cd ppmtool-react-client && npm start
+```
+
+Navigate to `http://localhost:3000`, register a new account, and log in.
 
 ## API Endpoints
 
