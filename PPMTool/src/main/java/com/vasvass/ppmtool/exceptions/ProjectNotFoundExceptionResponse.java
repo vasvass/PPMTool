@@ -2,8 +2,6 @@ package com.vasvass.ppmtool.exceptions;
 
 import com.vasvass.ppmtool.domain.Project;
 
-import javax.rmi.PortableRemoteObject;
-
 /**
  * <p><i>Created on: 31/10/19</i></p>
  *
