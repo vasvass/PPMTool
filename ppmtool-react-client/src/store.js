@@ -5,20 +5,12 @@ import rootReducer from "./reducers";
 const initialState = {};
 const middleware = [thunk];
 
-let store;
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-if (window.navigator.userAgent.includes("Chrome")) {
-  store = createStore(
-    rootReducer,
-    initialState,
-    compose(
-      applyMiddleware(...middleware),
-      window.__REDUX_DEVTOOLS_EXTENSION__ &&
-        window.__REDUX_DEVTOOLS_EXTENSION__()
-    )
-  );
-} else {
-  store = createStore(rootReducer, initialState, applyMiddleware(...middleware));
-}
+const store = createStore(
+  rootReducer,
+  initialState,
+  composeEnhancers(applyMiddleware(...middleware))
+);
 
 export default store;
